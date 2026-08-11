@@ -234,6 +234,64 @@
     <rect x="822" y="320" width="10" height="10"
           transform="rotate(45 827 325)" class="diamond"/>
 
+<!-- BALLS -->
+<circle id="cueBall"
+        cx="300"
+        cy="230"
+        r="11"
+        fill="white"
+        stroke="#ccc"
+        stroke-width="1"/>
+
+<circle id="objectBall"
+        cx="500"
+        cy="230"
+        r="11"
+        fill="#e63946"
+        stroke="#fff"
+        stroke-width="1"/>
+
+<script>
+const svg = document.querySelector("svg");
+
+const cueBall = document.getElementById("cueBall");
+const objectBall = document.getElementById("objectBall");
+
+let activeBall = null;
+
+function moveBall(event) {
+    if (!activeBall) return;
+
+    const point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+
+    const svgPoint = point.matrixTransform(
+        svg.getScreenCTM().inverse()
+    );
+
+    const x = Math.max(82, Math.min(798, svgPoint.x));
+    const y = Math.max(57, Math.min(403, svgPoint.y));
+
+    activeBall.setAttribute("cx", x);
+    activeBall.setAttribute("cy", y);
+}
+
+function startDrag(event) {
+    activeBall = event.currentTarget;
+    event.preventDefault();
+}
+
+function stopDrag() {
+    activeBall = null;
+}
+
+cueBall.addEventListener("pointerdown", startDrag);
+objectBall.addEventListener("pointerdown", startDrag);
+
+window.addEventListener("pointermove", moveBall);
+window.addEventListener("pointerup", stopDrag);
+</script>
 </svg>
 
 </div>
