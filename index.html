@@ -1,1933 +1,2246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pool Shark</title>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+/>
+<meta name="theme-color" content="#0b0d10" />
+<title>Shot Caller</title>
 
 <style>
-* {
+  :root {
+    --bg: #0b0d10;
+    --panel: #12161b;
+    --panel-2: #171c22;
+    --border: #28303a;
+    --text: #f3f5f7;
+    --muted: #9ba5b1;
+    --green: #2bd576;
+    --green-dark: #155c37;
+    --gold: #f2c14e;
+    --red: #ff5c5c;
+    --blue: #5da9ff;
+    --table: #197a4b;
+    --rail: #4b301f;
+    --rail-dark: #352217;
+    --felt: #16804e;
+    --felt-light: #1a8c58;
+    --white-ball: #f4f4ef;
+    --black: #111;
+    --shadow: rgba(0,0,0,.35);
+  }
+
+  * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
-}
+  }
 
-html,
-body {
+  html,
+  body {
     margin: 0;
-    padding: 0;
-    background: #0d0d0d;
-    color: #fff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-}
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+  }
 
-body {
-    padding: 14px 0 35px;
-}
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 
-.app {
-    width: min(96vw, 920px);
-    margin: auto;
-}
+  button,
+  select {
+    font: inherit;
+  }
 
-.header {
-    text-align: center;
-    margin-bottom: 12px;
-}
+  button {
+    cursor: pointer;
+  }
 
-.header h1 {
-    margin: 0;
-    font-size: 28px;
-    letter-spacing: .3px;
-}
+  .app {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+  }
 
-.header p {
-    margin: 3px 0 0;
-    color: #888;
-    font-size: 12px;
-}
-
-.mode-bar {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 7px;
-    margin-bottom: 9px;
-}
-
-.mode {
-    border: 0;
-    border-radius: 8px;
-    background: #242424;
-    color: #ddd;
-    padding: 11px 5px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.mode.active {
-    background: #08783f;
-    color: white;
-}
-
-.secondary {
+  header {
     display: flex;
-    justify-content: center;
-    gap: 7px;
-    margin-bottom: 9px;
-}
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+  }
 
-.secondary button {
-    border: 0;
-    border-radius: 8px;
-    background: #202020;
-    color: #bbb;
-    padding: 8px 12px;
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--green);
+    color: #07140d;
+    font-weight: 900;
+    font-size: 18px;
+    box-shadow: 0 8px 30px rgba(43,213,118,.18);
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 25px;
+    letter-spacing: -.04em;
+  }
+
+  .brand p {
+    margin: 2px 0 0;
+    color: var(--muted);
     font-size: 12px;
-}
+  }
 
-.secondary button.reset {
-    color: #ff8585;
-}
+  .status {
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(43,213,118,.08);
+    border: 1px solid rgba(43,213,118,.2);
+    border-radius: 999px;
+    padding: 7px 11px;
+  }
 
-.instruction {
-    min-height: 18px;
-    text-align: center;
-    color: #aaa;
-    font-size: 13px;
-    margin-bottom: 8px;
-}
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    align-items: start;
+  }
 
-.table-wrap {
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 15px 50px var(--shadow);
+  }
+
+  .table-card {
+    padding: 14px;
+  }
+
+  .table-wrap {
     width: 100%;
     overflow: hidden;
-}
+    border-radius: 13px;
+    background: #24160e;
+    touch-action: none;
+    user-select: none;
+  }
 
-svg {
+  canvas {
     display: block;
     width: 100%;
     height: auto;
-    touch-action: manipulation;
-    user-select: none;
-}
+    touch-action: none;
+  }
 
-.rail {
-    fill: #5a321c;
-}
-
-.cloth {
-    fill: #08783f;
-}
-
-.cushion {
-    fill: #145b36;
-}
-
-.pocket {
-    fill: #050505;
-    stroke: #29190d;
-    stroke-width: 2;
-}
-
-.pocket.selected {
-    stroke: #00ffff;
-    stroke-width: 5;
-}
-
-.diamond {
-    fill: #d8c69b;
-}
-
-.table-mark {
-    stroke: rgba(255,255,255,.11);
-    stroke-width: 1;
-}
-
-.spot {
-    fill: rgba(255,255,255,.65);
-}
-
-.ball {
-    filter: drop-shadow(1px 2px 2px rgba(0,0,0,.55));
-}
-
-.ball.selected {
-    stroke: #00ffff;
-    stroke-width: 4;
-}
-
-.aim-line {
-    stroke: #00ffff;
-    stroke-width: 2.5;
-    stroke-dasharray: 8 5;
-    fill: none;
-}
-
-.object-line {
-    stroke: #ffd84d;
-    stroke-width: 2.5;
-    fill: none;
-}
-
-.ghost {
-    fill: rgba(255,255,255,.13);
-    stroke: #00ffff;
-    stroke-width: 2;
-    stroke-dasharray: 5 4;
-}
-
-.contact {
-    fill: #00ffff;
-}
-
-.cue-path-end {
-    fill: #00ffff;
-}
-
-.warning-line {
-    stroke: #ff5757;
-    stroke-width: 3;
-    stroke-dasharray: 7 5;
-}
-
-.info-card {
-    margin-top: 11px;
-    background: #191919;
-    border-radius: 11px;
-    padding: 14px;
-}
-
-.info-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 7px;
-}
-
-.info-main {
-    font-size: 14px;
-    line-height: 1.45;
-    color: #ccc;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 7px;
-    margin-top: 10px;
-}
-
-.stat {
-    background: #222;
-    border-radius: 8px;
-    padding: 9px 5px;
-    text-align: center;
-}
-
-.stat-label {
-    color: #888;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-}
-
-.stat-value {
-    margin-top: 3px;
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.legend {
+  .table-help {
     display: flex;
-    justify-content: center;
-    gap: 15px;
     flex-wrap: wrap;
-    margin-top: 9px;
-    color: #888;
-    font-size: 11px;
-}
+    gap: 8px 18px;
+    padding: 11px 4px 1px;
+    color: var(--muted);
+    font-size: 12px;
+  }
 
-.legend-item {
+  .help-item {
     display: flex;
     align-items: center;
-    gap: 5px;
-}
+    gap: 7px;
+  }
 
-.legend-dot {
+  .dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-}
+  }
 
-.cyan {
-    background: #00ffff;
-}
+  .dot.cue { background: var(--white-ball); }
+  .dot.object { background: var(--gold); }
+  .dot.path { background: var(--green); }
+  .dot.bank { background: var(--blue); }
 
-.yellow {
-    background: #ffd84d;
-}
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
 
-.red {
-    background: #ff5757;
-}
+  .panel {
+    padding: 16px;
+  }
 
-@media (max-width: 430px) {
+  .panel h2 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    letter-spacing: -.01em;
+  }
 
-    .mode {
-        font-size: 12px;
-        padding: 10px 3px;
+  .panel-description {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .shot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .shot-button {
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--text);
+    border-radius: 11px;
+    padding: 11px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    transition: .15s ease;
+  }
+
+  .shot-button:active {
+    transform: scale(.98);
+  }
+
+  .shot-button.active {
+    background: rgba(43,213,118,.13);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .field {
+    margin-top: 14px;
+  }
+
+  .field label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 12px;
+    color: var(--text);
+    background: var(--panel-2);
+    outline: none;
+  }
+
+  .instruction {
+    border: 1px solid rgba(43,213,118,.24);
+    background:
+      linear-gradient(
+        145deg,
+        rgba(43,213,118,.11),
+        rgba(43,213,118,.035)
+      );
+    border-radius: 14px;
+    padding: 15px;
+  }
+
+  .instruction-label {
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-size: 10px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .instruction-main {
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+  }
+
+  .instruction-detail {
+    margin-top: 9px;
+    color: #c4ccd5;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-top: 13px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 25px 1fr;
+    gap: 9px;
+    align-items: start;
+  }
+
+  .step-number {
+    width: 25px;
+    height: 25px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .step-text {
+    padding-top: 4px;
+    color: #dce1e6;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .tip {
+    border-top: 1px solid var(--border);
+    margin-top: 14px;
+    padding-top: 13px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 13px;
+  }
+
+  .control-button {
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .control-button.primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #07140d;
+  }
+
+  .control-button:active {
+    transform: scale(.98);
+  }
+
+  .legend {
+    display: grid;
+    gap: 7px;
+  }
+
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .legend-line {
+    width: 28px;
+    height: 3px;
+    border-radius: 99px;
+  }
+
+  .legend-line.cue { background: var(--white-ball); }
+  .legend-line.object { background: var(--green); }
+  .legend-line.bank { background: var(--blue); }
+
+  .small-note {
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 950px) {
+    .layout {
+      grid-template-columns: 1fr;
     }
 
-    .header h1 {
-        font-size: 25px;
+    .sidebar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
     }
 
-    .info-card {
-        padding: 12px;
+    .sidebar > .panel:first-child {
+      grid-column: 1 / -1;
     }
-}
+  }
+
+  @media (max-width: 650px) {
+    .app {
+      padding: 12px;
+    }
+
+    header {
+      margin-bottom: 12px;
+    }
+
+    .brand h1 {
+      font-size: 21px;
+    }
+
+    .status {
+      display: none;
+    }
+
+    .sidebar {
+      display: flex;
+    }
+
+    .panel {
+      padding: 14px;
+    }
+
+    .table-card {
+      padding: 9px;
+      border-radius: 15px;
+    }
+
+    .table-help {
+      font-size: 10px;
+    }
+  }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
-<div class="header">
-    <h1>Pool Shark</h1>
-    <p>Shot Visualization & Aim Assistant</p>
-</div>
-
-<div class="mode-bar">
-
-    <button id="cueMode" class="mode active">
-        Cue Ball
-    </button>
-
-    <button id="objectMode" class="mode">
-        Object Ball
-    </button>
-
-    <button id="pocketMode" class="mode">
-        Pocket
-    </button>
-
-</div>
-
-<div class="secondary">
-
-    <button id="recalculate">
-        Recalculate
-    </button>
-
-    <button id="reset" class="reset">
-        Reset
-    </button>
-
-</div>
-
-<div id="instruction" class="instruction">
-    Tap the table to place the cue ball.
-</div>
-
-
-<div class="table-wrap">
-
-<svg
-    id="table"
-    viewBox="0 0 860 470"
-    xmlns="http://www.w3.org/2000/svg">
-
-    <!-- ==========================
-         TABLE
-         ========================== -->
-
-    <rect
-        x="20"
-        y="20"
-        width="820"
-        height="430"
-        rx="14"
-        class="rail"/>
-
-    <rect
-        x="70"
-        y="45"
-        width="740"
-        height="370"
-        class="cloth"/>
-
-
-    <!-- ==========================
-         CUSHION NOSES
-         ========================== -->
-
-    <line
-        x1="70" y1="45"
-        x2="810" y2="45"
-        stroke="#174f31"
-        stroke-width="8"/>
-
-    <line
-        x1="70" y1="415"
-        x2="810" y2="415"
-        stroke="#174f31"
-        stroke-width="8"/>
-
-    <line
-        x1="70" y1="45"
-        x2="70" y2="415"
-        stroke="#174f31"
-        stroke-width="8"/>
-
-    <line
-        x1="810" y1="45"
-        x2="810" y2="415"
-        stroke="#174f31"
-        stroke-width="8"/>
-
-
-    <!-- ==========================
-         POCKETS
-         ========================== -->
-
-    <circle id="p0" cx="70" cy="45" r="25" class="pocket"/>
-    <circle id="p1" cx="440" cy="45" r="25" class="pocket"/>
-    <circle id="p2" cx="810" cy="45" r="25" class="pocket"/>
-
-    <circle id="p3" cx="70" cy="415" r="25" class="pocket"/>
-    <circle id="p4" cx="440" cy="415" r="25" class="pocket"/>
-    <circle id="p5" cx="810" cy="415" r="25" class="pocket"/>
-
-
-    <!-- ==========================
-         TABLE REFERENCE MARKINGS
-         ========================== -->
-
-    <line
-        x1="255" y1="45"
-        x2="255" y2="415"
-        class="table-mark"/>
-
-    <line
-        x1="440" y1="45"
-        x2="440" y2="415"
-        class="table-mark"/>
-
-    <line
-        x1="625" y1="45"
-        x2="625" y2="415"
-        class="table-mark"/>
-
-    <circle
-        cx="255"
-        cy="230"
-        r="4"
-        class="spot"/>
-
-    <circle
-        cx="440"
-        cy="230"
-        r="4"
-        class="spot"/>
-
-    <circle
-        cx="625"
-        cy="230"
-        r="4"
-        class="spot"/>
-
-
-    <!-- ==========================
-         DIAMONDS
-         ========================== -->
-
-    <!-- TOP -->
-
-    <rect x="165" y="28" width="10" height="10"
-          transform="rotate(45 170 33)"
-          class="diamond"/>
-
-    <rect x="255" y="28" width="10" height="10"
-          transform="rotate(45 260 33)"
-          class="diamond"/>
-
-    <rect x="350" y="28" width="10" height="10"
-          transform="rotate(45 355 33)"
-          class="diamond"/>
-
-    <rect x="525" y="28" width="10" height="10"
-          transform="rotate(45 530 33)"
-          class="diamond"/>
-
-    <rect x="625" y="28" width="10" height="10"
-          transform="rotate(45 630 33)"
-          class="diamond"/>
-
-    <rect x="715" y="28" width="10" height="10"
-          transform="rotate(45 720 33)"
-          class="diamond"/>
-
-
-    <!-- BOTTOM -->
-
-    <rect x="165" y="422" width="10" height="10"
-          transform="rotate(45 170 427)"
-          class="diamond"/>
-
-    <rect x="255" y="422" width="10" height="10"
-          transform="rotate(45 260 427)"
-          class="diamond"/>
-
-    <rect x="350" y="422" width="10" height="10"
-          transform="rotate(45 355 427)"
-          class="diamond"/>
-
-    <rect x="525" y="422" width="10" height="10"
-          transform="rotate(45 530 427)"
-          class="diamond"/>
-
-    <rect x="625" y="422" width="10" height="10"
-          transform="rotate(45 630 427)"
-          class="diamond"/>
-
-    <rect x="715" y="422" width="10" height="10"
-          transform="rotate(45 720 427)"
-          class="diamond"/>
-
-
-    <!-- LEFT -->
-
-    <rect x="28" y="135" width="10" height="10"
-          transform="rotate(45 33 140)"
-          class="diamond"/>
-
-    <rect x="28" y="320" width="10" height="10"
-          transform="rotate(45 33 325)"
-          class="diamond"/>
-
-
-    <!-- RIGHT -->
-
-    <rect x="822" y="135" width="10" height="10"
-          transform="rotate(45 827 140)"
-          class="diamond"/>
-
-    <rect x="822" y="320" width="10" height="10"
-          transform="rotate(45 827 325)"
-          class="diamond"/>
-
-
-    <!-- ==========================
-         SHOT GRAPHICS
-         ========================== -->
-
-    <g id="graphics">
-
-        <line
-            id="cueAim"
-            class="aim-line"
-            visibility="hidden"/>
-
-        <line
-            id="objectPath"
-            class="object-line"
-            visibility="hidden"/>
-
-        <line
-            id="blockedLine"
-            class="warning-line"
-            visibility="hidden"/>
-
-        <circle
-            id="ghost"
-            class="ghost"
-            r="11"
-            visibility="hidden"/>
-
-        <circle
-            id="contact"
-            class="contact"
-            r="4"
-            visibility="hidden"/>
-
-    </g>
-
-
-    <!-- ==========================
-         BALLS
-         ========================== -->
-
-    <circle
-        id="cueBall"
-        cx="300"
-        cy="230"
-        r="11"
-        fill="#fff"
-        stroke="#888"
-        stroke-width="2"
-        class="ball"/>
-
-    <circle
-        id="objectBall"
-        cx="500"
-        cy="230"
-        r="11"
-        fill="#e63946"
-        stroke="#fff"
-        stroke-width="2"
-        class="ball"/>
-
-</svg>
-
-</div>
-
-
-<!-- ==========================
-     SHOT INFORMATION
-     ========================== -->
-
-<div class="info-card">
-
-    <div class="info-title" id="shotTitle">
-        Set up your shot
+  <header>
+    <div class="brand">
+      <div class="brand-mark">SC</div>
+      <div>
+        <h1>Shot Caller</h1>
+        <p>Read the table. Call the shot.</p>
+      </div>
     </div>
 
-    <div class="info-main" id="shotDescription">
-        Place the cue ball, object ball, and choose a pocket.
-    </div>
+    <div class="status">LIVE SHOT ANALYSIS</div>
+  </header>
 
-    <div class="stats">
+  <main class="layout">
 
-        <div class="stat">
-            <div class="stat-label">
-                Cut
-            </div>
+    <section class="card table-card">
+      <div class="table-wrap">
+        <canvas id="poolTable"></canvas>
+      </div>
 
-            <div
-                class="stat-value"
-                id="cutAngle">
-                —
-            </div>
+      <div class="table-help">
+        <div class="help-item">
+          <span class="dot cue"></span>
+          Cue ball
         </div>
 
-
-        <div class="stat">
-            <div class="stat-label">
-                Distance
-            </div>
-
-            <div
-                class="stat-value"
-                id="shotDistance">
-                —
-            </div>
+        <div class="help-item">
+          <span class="dot object"></span>
+          Object ball
         </div>
 
-
-        <div class="stat">
-            <div class="stat-label">
-                Difficulty
-            </div>
-
-            <div
-                class="stat-value"
-                id="difficulty">
-                —
-            </div>
+        <div class="help-item">
+          <span class="dot path"></span>
+          Recommended path
         </div>
 
-    </div>
+        <div class="help-item">
+          <span class="dot bank"></span>
+          Rail / bank path
+        </div>
 
+        <div class="help-item">
+          Drag either ball to reposition
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+
+      <section class="card panel">
+        <h2>Choose the shot</h2>
+        <p class="panel-description">
+          Shot Caller recalculates automatically whenever you move a ball,
+          change the pocket, or change the shot type.
+        </p>
+
+        <div class="shot-grid">
+          <button class="shot-button active" data-shot="direct">
+            Direct / Cut
+          </button>
+
+          <button class="shot-button" data-shot="bank">
+            Bank
+          </button>
+
+          <button class="shot-button" data-shot="kick">
+            Kick
+          </button>
+
+          <button class="shot-button" data-shot="combo">
+            Combination
+          </button>
+        </div>
+
+        <div class="field">
+          <label for="pocketSelect">Target pocket</label>
+          <select id="pocketSelect">
+            <option value="tl">Top Left</option>
+            <option value="tm">Top Middle</option>
+            <option value="tr">Top Right</option>
+            <option value="bl">Bottom Left</option>
+            <option value="bm">Bottom Middle</option>
+            <option value="br" selected>Bottom Right</option>
+          </select>
+        </div>
+
+        <div class="controls">
+          <button class="control-button" id="resetButton">
+            Reset Table
+          </button>
+
+          <button class="control-button primary" id="centerButton">
+            Center View
+          </button>
+        </div>
+      </section>
+
+      <section class="card panel">
+        <div class="instruction">
+          <div class="instruction-label">Shot Caller</div>
+
+          <div class="instruction-main" id="instructionMain">
+            Move the balls to your shot.
+          </div>
+
+          <div class="instruction-detail" id="instructionDetail">
+            The recommendation will update automatically.
+          </div>
+
+          <div class="steps" id="steps"></div>
+        </div>
+      </section>
+
+      <section class="card panel">
+        <h2>How to use it</h2>
+
+        <p class="panel-description">
+          Put the balls where they are on the real table. Then select the
+          pocket you want to make.
+        </p>
+
+        <div class="legend">
+          <div class="legend-row">
+            <span class="legend-line cue"></span>
+            Cue-ball path
+          </div>
+
+          <div class="legend-row">
+            <span class="legend-line object"></span>
+            Object-ball path
+          </div>
+
+          <div class="legend-row">
+            <span class="legend-line bank"></span>
+            Bank / rail route
+          </div>
+        </div>
+
+        <div class="tip">
+          The app uses the table's diamonds and ball positions rather than
+          asking you to interpret degrees or inches.
+        </div>
+      </section>
+
+    </aside>
+  </main>
 </div>
-
-
-<div class="legend">
-
-    <div class="legend-item">
-        <span class="legend-dot cyan"></span>
-        Cue-ball aim
-    </div>
-
-    <div class="legend-item">
-        <span class="legend-dot yellow"></span>
-        Object-ball path
-    </div>
-
-    <div class="legend-item">
-        <span class="legend-dot red"></span>
-        Potential obstruction
-    </div>
-
-</div>
-
-</div>
-
 
 <script>
-
 /* =========================================================
-   POOL SHARK ENGINE
+   SHOT CALLER
+   Complete standalone pool-shot planner
    ========================================================= */
 
-/*
-    BASE MODEL
-
-    Playing surface:
-        78 × 39 inches
-
-    SVG:
-        740 × 370 units
-
-    Ball:
-        2.25 inch diameter
-
-    SVG ball radius:
-        approximately 11 units
-*/
-
-
-const svg =
-    document.getElementById("table");
-
-const cueBall =
-    document.getElementById("cueBall");
-
-const objectBall =
-    document.getElementById("objectBall");
-
-const cueMode =
-    document.getElementById("cueMode");
-
-const objectMode =
-    document.getElementById("objectMode");
-
-const pocketMode =
-    document.getElementById("pocketMode");
-
-const resetButton =
-    document.getElementById("reset");
-
-const recalculateButton =
-    document.getElementById("recalculate");
-
-const instruction =
-    document.getElementById("instruction");
-
-const shotTitle =
-    document.getElementById("shotTitle");
-
-const shotDescription =
-    document.getElementById("shotDescription");
-
-const cutAngleDisplay =
-    document.getElementById("cutAngle");
-
-const shotDistanceDisplay =
-    document.getElementById("shotDistance");
-
-const difficultyDisplay =
-    document.getElementById("difficulty");
-
-const cueAim =
-    document.getElementById("cueAim");
-
-const objectPath =
-    document.getElementById("objectPath");
-
-const blockedLine =
-    document.getElementById("blockedLine");
-
-const ghost =
-    document.getElementById("ghost");
-
-const contact =
-    document.getElementById("contact");
-
-
-/* =========================================================
-   TABLE CONSTANTS
-   ========================================================= */
-
-const BALL_RADIUS = 11;
-
-const MIN_X = 82;
-const MAX_X = 798;
-const MIN_Y = 57;
-const MAX_Y = 403;
-
-
-/* =========================================================
-   POCKETS
-   ========================================================= */
-
-const pockets = [
-
-    {
-        id: "p0",
-        x: 70,
-        y: 45
-    },
-
-    {
-        id: "p1",
-        x: 440,
-        y: 45
-    },
-
-    {
-        id: "p2",
-        x: 810,
-        y: 45
-    },
-
-    {
-        id: "p3",
-        x: 70,
-        y: 415
-    },
-
-    {
-        id: "p4",
-        x: 440,
-        y: 415
-    },
-
-    {
-        id: "p5",
-        x: 810,
-        y: 415
-    }
-
-];
-
-
-/* =========================================================
-   STATE
-   ========================================================= */
-
-let mode = "cue";
-
-let selectedPocket = null;
-
-
-/* =========================================================
-   MODE
-   ========================================================= */
-
-function setMode(newMode) {
-
-    mode = newMode;
-
-    cueMode.classList.remove("active");
-    objectMode.classList.remove("active");
-    pocketMode.classList.remove("active");
-
-    if (mode === "cue") {
-
-        cueMode.classList.add("active");
-
-        instruction.textContent =
-            "Tap the table to place the cue ball.";
-
-    }
-
-    if (mode === "object") {
-
-        objectMode.classList.add("active");
-
-        instruction.textContent =
-            "Tap the table to place the object ball.";
-
-    }
-
-    if (mode === "pocket") {
-
-        pocketMode.classList.add("active");
-
-        instruction.textContent =
-            "Tap a pocket to select your target.";
-
-    }
-
-}
-
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-cueMode.onclick = function() {
-
-    setMode("cue");
-
+const canvas = document.getElementById("poolTable");
+const ctx = canvas.getContext("2d");
+
+const instructionMain = document.getElementById("instructionMain");
+const instructionDetail = document.getElementById("instructionDetail");
+const stepsEl = document.getElementById("steps");
+
+const pocketSelect = document.getElementById("pocketSelect");
+const resetButton = document.getElementById("resetButton");
+const centerButton = document.getElementById("centerButton");
+
+const shotButtons = [...document.querySelectorAll(".shot-button")];
+
+const TABLE = {
+  width: 1000,
+  height: 500,
+  rail: 42,
+  pocketRadius: 28,
+  ballRadius: 14
 };
 
-
-objectMode.onclick = function() {
-
-    setMode("object");
-
+const felt = {
+  left: TABLE.rail,
+  top: TABLE.rail,
+  right: TABLE.width - TABLE.rail,
+  bottom: TABLE.height - TABLE.rail
 };
 
-
-pocketMode.onclick = function() {
-
-    setMode("pocket");
-
+const pockets = {
+  tl: { x: felt.left, y: felt.top, name: "top-left pocket" },
+  tm: { x: TABLE.width / 2, y: felt.top, name: "top-middle pocket" },
+  tr: { x: felt.right, y: felt.top, name: "top-right pocket" },
+  bl: { x: felt.left, y: felt.bottom, name: "bottom-left pocket" },
+  bm: { x: TABLE.width / 2, y: felt.bottom, name: "bottom-middle pocket" },
+  br: { x: felt.right, y: felt.bottom, name: "bottom-right pocket" }
 };
 
+const state = {
+  shotType: "direct",
 
-recalculateButton.onclick = function() {
+  cue: {
+    x: 250,
+    y: 330
+  },
 
-    calculateShot();
+  object: {
+    x: 580,
+    y: 250
+  },
 
+  selectedBall: null,
+
+  viewScale: 1,
+  viewX: 0,
+  viewY: 0,
+
+  dpr: window.devicePixelRatio || 1
 };
 
+/* ---------------------------------------------------------
+   Math helpers
+   --------------------------------------------------------- */
 
-resetButton.onclick = function() {
-
-    cueBall.setAttribute(
-        "cx",
-        "300"
-    );
-
-    cueBall.setAttribute(
-        "cy",
-        "230"
-    );
-
-    objectBall.setAttribute(
-        "cx",
-        "500"
-    );
-
-    objectBall.setAttribute(
-        "cy",
-        "230"
-    );
-
-    selectedPocket = null;
-
-    clearGraphics();
-
-    clearPocketSelection();
-
-    shotTitle.textContent =
-        "Set up your shot";
-
-    shotDescription.textContent =
-        "Place the cue ball, object ball, and choose a pocket.";
-
-    cutAngleDisplay.textContent = "—";
-
-    shotDistanceDisplay.textContent = "—";
-
-    difficultyDisplay.textContent = "—";
-
-    setMode("cue");
-
-};
-
-
-/* =========================================================
-   GET SVG COORDINATES
-   ========================================================= */
-
-function svgPoint(event) {
-
-    const point =
-        svg.createSVGPoint();
-
-    point.x =
-        event.clientX;
-
-    point.y =
-        event.clientY;
-
-    return point.matrixTransform(
-        svg.getScreenCTM().inverse()
-    );
-
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
 }
 
-
-/* =========================================================
-   PLACE BALLS
-   ========================================================= */
-
-svg.addEventListener(
-    "click",
-    function(event) {
-
-        /*
-            If a pocket itself was clicked,
-            don't place a ball.
-        */
-
-        if (
-            event.target.classList.contains("pocket")
-        ) {
-            return;
-        }
-
-
-        if (mode === "pocket") {
-            return;
-        }
-
-
-        /*
-            Don't let clicking a graphic
-            interfere with placement.
-        */
-
-        if (
-            event.target.closest("#graphics")
-        ) {
-            return;
-        }
-
-
-        const point =
-            svgPoint(event);
-
-
-        let x =
-            Math.max(
-                MIN_X,
-                Math.min(MAX_X, point.x)
-            );
-
-        let y =
-            Math.max(
-                MIN_Y,
-                Math.min(MAX_Y, point.y)
-            );
-
-
-        if (mode === "cue") {
-
-            cueBall.setAttribute(
-                "cx",
-                x
-            );
-
-            cueBall.setAttribute(
-                "cy",
-                y
-            );
-
-            clearGraphics();
-
-            setMode("object");
-
-            instruction.textContent =
-                "Now place the object ball.";
-
-        }
-
-
-        else if (mode === "object") {
-
-            /*
-                Don't allow the balls to overlap.
-            */
-
-            const cx =
-                Number(
-                    cueBall.getAttribute("cx")
-                );
-
-            const cy =
-                Number(
-                    cueBall.getAttribute("cy")
-                );
-
-
-            const separation =
-                distance(
-                    x,
-                    y,
-                    cx,
-                    cy
-                );
-
-
-            if (
-                separation <
-                BALL_RADIUS * 2.2
-            ) {
-
-                instruction.textContent =
-                    "Move the object ball farther from the cue ball.";
-
-                return;
-
-            }
-
-
-            objectBall.setAttribute(
-                "cx",
-                x
-            );
-
-            objectBall.setAttribute(
-                "cy",
-                y
-            );
-
-            clearGraphics();
-
-            setMode("pocket");
-
-            instruction.textContent =
-                "Now tap the pocket you want to make.";
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   POCKET SELECTION
-   ========================================================= */
-
-pockets.forEach(
-    function(pocket) {
-
-        const element =
-            document.getElementById(
-                pocket.id
-            );
-
-
-        element.addEventListener(
-            "click",
-            function(event) {
-
-                event.stopPropagation();
-
-
-                if (
-                    mode !== "pocket"
-                ) {
-                    return;
-                }
-
-
-                selectedPocket =
-                    pocket;
-
-
-                clearPocketSelection();
-
-
-                element.classList.add(
-                    "selected"
-                );
-
-
-                calculateShot();
-
-            }
-        );
-
-    }
-);
-
-
-/* =========================================================
-   DISTANCE
-   ========================================================= */
-
-function distance(
-    x1,
-    y1,
-    x2,
-    y2
-) {
-
-    const dx =
-        x2 - x1;
-
-    const dy =
-        y2 - y1;
-
-    return Math.sqrt(
-        dx * dx +
-        dy * dy
-    );
-
+function add(a, b) {
+  return {
+    x: a.x + b.x,
+    y: a.y + b.y
+  };
 }
 
-
-/* =========================================================
-   UNIT VECTOR
-   ========================================================= */
-
-function unitVector(
-    x,
-    y
-) {
-
-    const length =
-        Math.sqrt(
-            x * x +
-            y * y
-        );
-
-
-    if (length === 0) {
-
-        return {
-            x: 0,
-            y: 0
-        };
-
-    }
-
-
-    return {
-
-        x: x / length,
-
-        y: y / length
-
-    };
-
+function sub(a, b) {
+  return {
+    x: a.x - b.x,
+    y: a.y - b.y
+  };
 }
 
-
-/* =========================================================
-   DOT PRODUCT
-   ========================================================= */
-
-function dot(
-    ax,
-    ay,
-    bx,
-    by
-) {
-
-    return (
-        ax * bx +
-        ay * by
-    );
-
+function mul(v, n) {
+  return {
+    x: v.x * n,
+    y: v.y * n
+  };
 }
 
-
-/* =========================================================
-   ANGLE
-   ========================================================= */
-
-function angleBetween(
-    ax,
-    ay,
-    bx,
-    by
-) {
-
-    const aLength =
-        Math.sqrt(
-            ax * ax +
-            ay * ay
-        );
-
-    const bLength =
-        Math.sqrt(
-            bx * bx +
-            by * by
-        );
-
-
-    if (
-        aLength === 0 ||
-        bLength === 0
-    ) {
-
-        return 0;
-
-    }
-
-
-    let value =
-        dot(
-            ax,
-            ay,
-            bx,
-            by
-        ) /
-        (
-            aLength *
-            bLength
-        );
-
-
-    value =
-        Math.max(
-            -1,
-            Math.min(
-                1,
-                value
-            )
-        );
-
-
-    return (
-        Math.acos(value) *
-        180 /
-        Math.PI
-    );
-
+function length(v) {
+  return Math.hypot(v.x, v.y);
 }
 
+function normalize(v) {
+  const l = length(v);
 
-/* =========================================================
-   SEGMENT / CIRCLE COLLISION
-   ========================================================= */
+  if (!l) {
+    return { x: 0, y: 0 };
+  }
 
-function lineHitsCircle(
-    x1,
-    y1,
-    x2,
-    y2,
-    cx,
-    cy,
+  return {
+    x: v.x / l,
+    y: v.y / l
+  };
+}
+
+function distance(a, b) {
+  return length(sub(a, b));
+}
+
+function dot(a, b) {
+  return a.x * b.x + a.y * b.y;
+}
+
+function lerp(a, b, t) {
+  return {
+    x: a.x + (b.x - a.x) * t,
+    y: a.y + (b.y - a.y) * t
+  };
+}
+
+/* ---------------------------------------------------------
+   Canvas / responsive sizing
+   --------------------------------------------------------- */
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+
+  const width = Math.max(300, rect.width);
+  const height = width * (TABLE.height / TABLE.width);
+
+  canvas.style.height = `${height}px`;
+
+  state.dpr = window.devicePixelRatio || 1;
+
+  canvas.width = Math.round(width * state.dpr);
+  canvas.height = Math.round(height * state.dpr);
+
+  draw();
+}
+
+function worldToCanvas(point) {
+  const rect = canvas.getBoundingClientRect();
+
+  const scaleX = rect.width / TABLE.width;
+  const scaleY = rect.height / TABLE.height;
+
+  return {
+    x: point.x * scaleX,
+    y: point.y * scaleY
+  };
+}
+
+function canvasToWorld(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+
+  return {
+    x: clamp(
+      ((clientX - rect.left) / rect.width) * TABLE.width,
+      0,
+      TABLE.width
+    ),
+
+    y: clamp(
+      ((clientY - rect.top) / rect.height) * TABLE.height,
+      0,
+      TABLE.height
+    )
+  };
+}
+
+/* ---------------------------------------------------------
+   Table drawing
+   --------------------------------------------------------- */
+
+function roundedRectPath(x, y, width, height, radius) {
+  ctx.beginPath();
+
+  ctx.moveTo(x + radius, y);
+
+  ctx.arcTo(
+    x + width,
+    y,
+    x + width,
+    y + height,
     radius
-) {
+  );
 
-    const dx =
-        x2 - x1;
+  ctx.arcTo(
+    x + width,
+    y + height,
+    x,
+    y + height,
+    radius
+  );
 
-    const dy =
-        y2 - y1;
+  ctx.arcTo(
+    x,
+    y + height,
+    x,
+    y,
+    radius
+  );
 
+  ctx.arcTo(
+    x,
+    y,
+    x + width,
+    y,
+    radius
+  );
 
-    const lengthSquared =
-        dx * dx +
-        dy * dy;
-
-
-    if (
-        lengthSquared === 0
-    ) {
-
-        return distance(
-            x1,
-            y1,
-            cx,
-            cy
-        ) <= radius;
-
-    }
-
-
-    let t =
-        (
-            (cx - x1) * dx +
-            (cy - y1) * dy
-        ) /
-        lengthSquared;
-
-
-    t =
-        Math.max(
-            0,
-            Math.min(
-                1,
-                t
-            )
-        );
-
-
-    const nearestX =
-        x1 + t * dx;
-
-    const nearestY =
-        y1 + t * dy;
-
-
-    return (
-        distance(
-            nearestX,
-            nearestY,
-            cx,
-            cy
-        ) <= radius
-    );
-
+  ctx.closePath();
 }
 
+function drawTable() {
+  const rect = canvas.getBoundingClientRect();
 
-/* =========================================================
-   CALCULATE SHOT
-   ========================================================= */
+  const sx = rect.width / TABLE.width;
+  const sy = rect.height / TABLE.height;
+
+  ctx.save();
+  ctx.setTransform(
+    state.dpr * sx,
+    0,
+    0,
+    state.dpr * sy,
+    0,
+    0
+  );
+
+  ctx.clearRect(
+    0,
+    0,
+    TABLE.width,
+    TABLE.height
+  );
+
+  /* Outer wood */
+  ctx.fillStyle = "#2b1a10";
+
+  roundedRectPath(
+    0,
+    0,
+    TABLE.width,
+    TABLE.height,
+    24
+  );
+
+  ctx.fill();
+
+  /* Rail */
+  ctx.fillStyle = "#5a3822";
+
+  roundedRectPath(
+    14,
+    14,
+    TABLE.width - 28,
+    TABLE.height - 28,
+    20
+  );
+
+  ctx.fill();
+
+  /* Rail highlights */
+  ctx.strokeStyle = "rgba(255,255,255,.08)";
+  ctx.lineWidth = 2;
+
+  roundedRectPath(
+    23,
+    23,
+    TABLE.width - 46,
+    TABLE.height - 46,
+    16
+  );
+
+  ctx.stroke();
+
+  /* Felt */
+  const fw = felt.right - felt.left;
+  const fh = felt.bottom - felt.top;
+
+  ctx.fillStyle = "#16804e";
+
+  roundedRectPath(
+    felt.left,
+    felt.top,
+    fw,
+    fh,
+    9
+  );
+
+  ctx.fill();
+
+  /* subtle felt */
+  ctx.fillStyle = "rgba(255,255,255,.025)";
+
+  for (let x = felt.left; x < felt.right; x += 14) {
+    ctx.fillRect(x, felt.top, 1, fh);
+  }
+
+  /* Diamonds */
+  drawDiamonds();
+
+  /* Pockets */
+  Object.values(pockets).forEach(drawPocket);
+
+  ctx.restore();
+}
+
+function drawDiamonds() {
+  const diamondSize = 8;
+
+  const topBottomXs = [
+    felt.left + (felt.right - felt.left) * .125,
+    felt.left + (felt.right - felt.left) * .25,
+    felt.left + (felt.right - felt.left) * .375,
+    felt.left + (felt.right - felt.left) * .625,
+    felt.left + (felt.right - felt.left) * .75,
+    felt.left + (felt.right - felt.left) * .875
+  ];
+
+  const sideYs = [
+    felt.top + (felt.bottom - felt.top) * .25,
+    felt.top + (felt.bottom - felt.top) * .5,
+    felt.top + (felt.bottom - felt.top) * .75
+  ];
+
+  ctx.fillStyle = "#e6d2a1";
+
+  topBottomXs.forEach(x => {
+    drawDiamond(x, felt.top - 17, diamondSize);
+    drawDiamond(x, felt.bottom + 17, diamondSize);
+  });
+
+  sideYs.forEach(y => {
+    drawDiamond(felt.left - 17, y, diamondSize);
+    drawDiamond(felt.right + 17, y, diamondSize);
+  });
+}
+
+function drawDiamond(x, y, size) {
+  ctx.beginPath();
+  ctx.moveTo(x, y - size);
+  ctx.lineTo(x + size, y);
+  ctx.lineTo(x, y + size);
+  ctx.lineTo(x - size, y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawPocket(pocket) {
+  ctx.beginPath();
+  ctx.arc(
+    pocket.x,
+    pocket.y,
+    TABLE.pocketRadius,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fillStyle = "#090909";
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(255,255,255,.08)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+/* ---------------------------------------------------------
+   Ball drawing
+   --------------------------------------------------------- */
+
+function drawBall(ball, type) {
+  const radius = TABLE.ballRadius;
+
+  const gradient = ctx.createRadialGradient(
+    ball.x - radius * .35,
+    ball.y - radius * .35,
+    1,
+    ball.x,
+    ball.y,
+    radius
+  );
+
+  if (type === "cue") {
+    gradient.addColorStop(0, "#ffffff");
+    gradient.addColorStop(.7, "#ededeb");
+    gradient.addColorStop(1, "#bdbdb9");
+  } else {
+    gradient.addColorStop(0, "#fff5c9");
+    gradient.addColorStop(.55, "#f2c14e");
+    gradient.addColorStop(1, "#b98117");
+  }
+
+  ctx.beginPath();
+  ctx.arc(
+    ball.x,
+    ball.y,
+    radius,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  ctx.strokeStyle =
+    state.selectedBall === type
+      ? "#ffffff"
+      : "rgba(0,0,0,.35)";
+
+  ctx.lineWidth =
+    state.selectedBall === type
+      ? 3
+      : 1.5;
+
+  ctx.stroke();
+
+  if (state.selectedBall === type) {
+    ctx.beginPath();
+    ctx.arc(
+      ball.x,
+      ball.y,
+      radius + 7,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.strokeStyle = "rgba(43,213,118,.75)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
+
+/* ---------------------------------------------------------
+   Geometry
+   --------------------------------------------------------- */
+
+function getPocket() {
+  return pockets[pocketSelect.value];
+}
+
+function pointInsideTable(point, margin = TABLE.ballRadius) {
+  return (
+    point.x >= felt.left + margin &&
+    point.x <= felt.right - margin &&
+    point.y >= felt.top + margin &&
+    point.y <= felt.bottom - margin
+  );
+}
+
+function lineIntersectionWithRail(start, end) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+
+  const candidates = [];
+
+  if (Math.abs(dx) > 1e-8) {
+    let t = (felt.left - start.x) / dx;
+
+    if (t > 0 && t < 1) {
+      candidates.push({
+        t,
+        point: {
+          x: felt.left,
+          y: start.y + dy * t
+        },
+        rail: "left"
+      });
+    }
+
+    t = (felt.right - start.x) / dx;
+
+    if (t > 0 && t < 1) {
+      candidates.push({
+        t,
+        point: {
+          x: felt.right,
+          y: start.y + dy * t
+        },
+        rail: "right"
+      });
+    }
+  }
+
+  if (Math.abs(dy) > 1e-8) {
+    let t = (felt.top - start.y) / dy;
+
+    if (t > 0 && t < 1) {
+      candidates.push({
+        t,
+        point: {
+          x: start.x + dx * t,
+          y: felt.top
+        },
+        rail: "top"
+      });
+    }
+
+    t = (felt.bottom - start.y) / dy;
+
+    if (t > 0 && t < 1) {
+      candidates.push({
+        t,
+        point: {
+          x: start.x + dx * t,
+          y: felt.bottom
+        },
+        rail: "bottom"
+      });
+    }
+  }
+
+  candidates.sort((a, b) => a.t - b.t);
+
+  return candidates[0] || null;
+}
+
+function reflectAcrossRail(point, rail) {
+  if (rail === "left") {
+    return {
+      x: 2 * felt.left - point.x,
+      y: point.y
+    };
+  }
+
+  if (rail === "right") {
+    return {
+      x: 2 * felt.right - point.x,
+      y: point.y
+    };
+  }
+
+  if (rail === "top") {
+    return {
+      x: point.x,
+      y: 2 * felt.top - point.y
+    };
+  }
+
+  return {
+    x: point.x,
+    y: 2 * felt.bottom - point.y
+  };
+}
+
+function getBankSolution(start, pocket) {
+  const railCandidates = [
+    "left",
+    "right",
+    "top",
+    "bottom"
+  ];
+
+  let best = null;
+
+  for (const rail of railCandidates) {
+    const reflectedPocket =
+      reflectAcrossRail(pocket, rail);
+
+    const intersection =
+      lineIntersectionWithRail(
+        start,
+        reflectedPocket
+      );
+
+    if (!intersection) continue;
+
+    const p = intersection.point;
+
+    const insideSegment =
+      rail === "left" || rail === "right"
+        ? p.y >= felt.top + 12 &&
+          p.y <= felt.bottom - 12
+        : p.x >= felt.left + 12 &&
+          p.x <= felt.right - 12;
+
+    if (!insideSegment) continue;
+
+    const totalLength =
+      distance(start, p) +
+      distance(p, pocket);
+
+    if (!best || totalLength < best.totalLength) {
+      best = {
+        rail,
+        bankPoint: p,
+        reflectedPocket,
+        totalLength
+      };
+    }
+  }
+
+  return best;
+}
+
+function getObjectTarget(shotType) {
+  const object = state.object;
+  const pocket = getPocket();
+
+  if (shotType === "bank") {
+    const bank = getBankSolution(
+      object,
+      pocket
+    );
+
+    if (bank) {
+      return {
+        finalTarget: pocket,
+        path: [
+          object,
+          bank.bankPoint,
+          pocket
+        ],
+        bank
+      };
+    }
+  }
+
+  return {
+    finalTarget: pocket,
+    path: [object, pocket],
+    bank: null
+  };
+}
+
+function getContactPoint(object, target) {
+  const direction = normalize(
+    sub(target, object)
+  );
+
+  return sub(
+    object,
+    mul(direction, TABLE.ballRadius * 2)
+  );
+}
+
+function getCuePath(contactPoint) {
+  return [
+    state.cue,
+    contactPoint
+  ];
+}
+
+/* ---------------------------------------------------------
+   Kick shot geometry
+   --------------------------------------------------------- */
+
+function getKickSolution() {
+  const cue = state.cue;
+  const object = state.object;
+
+  const rails = [
+    "left",
+    "right",
+    "top",
+    "bottom"
+  ];
+
+  let best = null;
+
+  for (const rail of rails) {
+    const reflectedObject =
+      reflectAcrossRail(object, rail);
+
+    const intersection =
+      lineIntersectionWithRail(
+        cue,
+        reflectedObject
+      );
+
+    if (!intersection) continue;
+
+    const p = intersection.point;
+
+    const valid =
+      rail === "left" || rail === "right"
+        ? p.y > felt.top + 20 &&
+          p.y < felt.bottom - 20
+        : p.x > felt.left + 20 &&
+          p.x < felt.right - 20;
+
+    if (!valid) continue;
+
+    const total =
+      distance(cue, p) +
+      distance(p, object);
+
+    if (!best || total < best.total) {
+      best = {
+        rail,
+        kickPoint: p,
+        total,
+        reflectedObject
+      };
+    }
+  }
+
+  return best;
+}
+
+/* ---------------------------------------------------------
+   Combination geometry
+   --------------------------------------------------------- */
+
+function getComboSolution() {
+  const pocket = getPocket();
+
+  const first = {
+    x: state.object.x - 70,
+    y: state.object.y - 45
+  };
+
+  const target =
+    getContactPoint(
+      state.object,
+      pocket
+    );
+
+  return {
+    first,
+    target,
+    pocket
+  };
+}
+
+/* ---------------------------------------------------------
+   Direction language
+   --------------------------------------------------------- */
+
+function horizontalDirection(from, to) {
+  const dx = to.x - from.x;
+
+  if (Math.abs(dx) < 12) {
+    return "center";
+  }
+
+  return dx > 0 ? "right" : "left";
+}
+
+function verticalDirection(from, to) {
+  const dy = to.y - from.y;
+
+  if (Math.abs(dy) < 12) {
+    return "center";
+  }
+
+  return dy > 0 ? "down" : "up";
+}
+
+function describeRelativeAim(ball, target) {
+  const dx = target.x - ball.x;
+  const dy = target.y - ball.y;
+
+  const horizontal =
+    Math.abs(dx) < 12
+      ? "center"
+      : dx > 0
+        ? "right"
+        : "left";
+
+  const vertical =
+    Math.abs(dy) < 12
+      ? "center"
+      : dy > 0
+        ? "down"
+        : "up";
+
+  if (
+    horizontal === "center" &&
+    vertical === "center"
+  ) {
+    return "Aim straight through the center.";
+  }
+
+  if (horizontal === "center") {
+    return `Aim slightly ${vertical}.`;
+  }
+
+  if (vertical === "center") {
+    return `Aim slightly ${horizontal}.`;
+  }
+
+  return `Aim slightly ${vertical} and ${horizontal}.`;
+}
+
+function railName(rail) {
+  return {
+    left: "left rail",
+    right: "right rail",
+    top: "top rail",
+    bottom: "bottom rail"
+  }[rail];
+}
+
+function nearestDiamond(point, rail) {
+  let fraction;
+
+  if (rail === "left" || rail === "right") {
+    fraction =
+      (point.y - felt.top) /
+      (felt.bottom - felt.top);
+  } else {
+    fraction =
+      (point.x - felt.left) /
+      (felt.right - felt.left);
+  }
+
+  const diamonds = 4;
+
+  const value = clamp(
+    fraction * diamonds,
+    0,
+    diamonds
+  );
+
+  const nearest =
+    Math.round(value * 2) / 2;
+
+  if (nearest <= .25) return "near the corner";
+  if (nearest >= 3.75) return "near the opposite corner";
+
+  return `${nearest} diamonds from the nearest corner`;
+}
+
+function describeObjectContact(object, target) {
+  const direction = normalize(
+    sub(target, object)
+  );
+
+  const horizontal =
+    direction.x > .15
+      ? "right"
+      : direction.x < -.15
+        ? "left"
+        : "center";
+
+  const vertical =
+    direction.y > .15
+      ? "down"
+      : direction.y < -.15
+        ? "up"
+        : "center";
+
+  if (horizontal === "center") {
+    return vertical === "center"
+      ? "Hit the object ball close to center."
+      : `Contact the object ball on its ${vertical} side.`;
+  }
+
+  if (vertical === "center") {
+    return `Contact the object ball on its ${horizontal} side.`;
+  }
+
+  return `Contact the object ball on its ${vertical}-${horizontal} side.`;
+}
+
+/* ---------------------------------------------------------
+   Shot calculation
+   --------------------------------------------------------- */
 
 function calculateShot() {
+  const pocket = getPocket();
 
-    if (
-        !selectedPocket
-    ) {
+  if (state.shotType === "direct") {
+    const targetData =
+      getObjectTarget("direct");
 
-        return;
+    const target =
+      targetData.finalTarget;
 
+    const contact =
+      getContactPoint(
+        state.object,
+        target
+      );
+
+    const cuePath =
+      getCuePath(contact);
+
+    return {
+      type: "direct",
+      objectPath: [state.object, target],
+      cuePath,
+      contact,
+      bank: null,
+      valid: true
+    };
+  }
+
+  if (state.shotType === "bank") {
+    const targetData =
+      getObjectTarget("bank");
+
+    if (!targetData.bank) {
+      return {
+        type: "bank",
+        valid: false
+      };
     }
 
+    const firstLeg =
+      targetData.path[1];
 
-    const cueX =
-        Number(
-            cueBall.getAttribute("cx")
-        );
+    const contact =
+      getContactPoint(
+        state.object,
+        firstLeg
+      );
 
-    const cueY =
-        Number(
-            cueBall.getAttribute("cy")
-        );
+    return {
+      type: "bank",
+      objectPath: targetData.path,
+      cuePath: [
+        state.cue,
+        contact
+      ],
+      contact,
+      bank: targetData.bank,
+      valid: true
+    };
+  }
 
+  if (state.shotType === "kick") {
+    const kick =
+      getKickSolution();
 
-    const objectX =
-        Number(
-            objectBall.getAttribute("cx")
-        );
-
-    const objectY =
-        Number(
-            objectBall.getAttribute("cy")
-        );
-
-
-    const pocketX =
-        selectedPocket.x;
-
-    const pocketY =
-        selectedPocket.y;
-
-
-    /*
-        OBJECT → POCKET
-    */
-
-    const objectToPocketX =
-        pocketX - objectX;
-
-    const objectToPocketY =
-        pocketY - objectY;
-
-
-    const objectPocketDistance =
-        Math.sqrt(
-            objectToPocketX *
-            objectToPocketX +
-            objectToPocketY *
-            objectToPocketY
-        );
-
-
-    if (
-        objectPocketDistance === 0
-    ) {
-
-        return;
-
+    if (!kick) {
+      return {
+        type: "kick",
+        valid: false
+      };
     }
 
-
-    const pocketDirection =
-        unitVector(
-            objectToPocketX,
-            objectToPocketY
-        );
-
-
-    /*
-        GHOST BALL
-
-        Cue-ball center must be one
-        ball diameter behind the
-        object ball along the
-        object → pocket line.
-    */
-
-    const ghostX =
-        objectX -
-        pocketDirection.x *
-        BALL_RADIUS *
-        2;
-
-
-    const ghostY =
-        objectY -
-        pocketDirection.y *
-        BALL_RADIUS *
-        2;
-
-
-    /*
-        CONTACT POINT
-    */
-
-    const contactX =
-        objectX -
-        pocketDirection.x *
-        BALL_RADIUS;
-
-
-    const contactY =
-        objectY -
-        pocketDirection.y *
-        BALL_RADIUS;
-
-
-    /*
-        CUE → GHOST
-    */
-
-    const cueToGhostX =
-        ghostX - cueX;
-
-    const cueToGhostY =
-        ghostY - cueY;
-
-
-    /*
-        CUT ANGLE
-
-        Angle between the cue-ball
-        approach and the object-ball
-        travel direction.
-    */
-
-    const cutAngle =
-        angleBetween(
-            cueToGhostX,
-            cueToGhostY,
-            objectToPocketX,
-            objectToPocketY
-        );
-
-
-    /*
-        CUE DISTANCE
-    */
-
-    const cueDistance =
-        distance(
-            cueX,
-            cueY,
-            ghostX,
-            ghostY
-        );
-
-
-    /*
-        OBJECT DISTANCE
-    */
-
-    const objectDistance =
-        distance(
-            objectX,
-            objectY,
-            pocketX,
-            pocketY
-        );
-
-
-    /*
-        DRAW AIM LINE
-    */
-
-    cueAim.setAttribute(
-        "x1",
-        cueX
-    );
-
-    cueAim.setAttribute(
-        "y1",
-        cueY
-    );
-
-    cueAim.setAttribute(
-        "x2",
-        ghostX
-    );
-
-    cueAim.setAttribute(
-        "y2",
-        ghostY
-    );
-
-    cueAim.setAttribute(
-        "visibility",
-        "visible"
-    );
-
-
-    /*
-        DRAW OBJECT PATH
-    */
-
-    objectPath.setAttribute(
-        "x1",
-        objectX
-    );
-
-    objectPath.setAttribute(
-        "y1",
-        objectY
-    );
-
-    objectPath.setAttribute(
-        "x2",
-        pocketX
-    );
-
-    objectPath.setAttribute(
-        "y2",
-        pocketY
-    );
-
-    objectPath.setAttribute(
-        "visibility",
-        "visible"
-    );
-
-
-    /*
-        DRAW GHOST BALL
-    */
-
-    ghost.setAttribute(
-        "cx",
-        ghostX
-    );
-
-    ghost.setAttribute(
-        "cy",
-        ghostY
-    );
-
-    ghost.setAttribute(
-        "visibility",
-        "visible"
-    );
-
-
-    /*
-        DRAW CONTACT POINT
-    */
-
-    contact.setAttribute(
-        "cx",
-        contactX
-    );
-
-    contact.setAttribute(
-        "cy",
-        contactY
-    );
-
-    contact.setAttribute(
-        "visibility",
-        "visible"
-    );
-
-
-    /*
-        CHECK FOR CUE-BALL
-        OBSTRUCTION
-
-        We check whether the object ball
-        interferes with the cue → ghost path
-        BEFORE contact.
-    */
-
-    const obstruction =
-        lineHitsCircle(
-            cueX,
-            cueY,
-            ghostX,
-            ghostY,
-            objectX,
-            objectY,
-            BALL_RADIUS * 1.7
-        );
-
-
-    /*
-        IMPORTANT:
-
-        The object ball should naturally be
-        at the END of the cue path, so we
-        only treat it as obstruction when
-        the collision occurs substantially
-        before the intended ghost position.
-    */
-
-    let actuallyBlocked = false;
-
-
-    const cueToObject =
-        distance(
-            cueX,
-            cueY,
-            objectX,
-            objectY
-        );
-
-
-    if (
-        obstruction &&
-        cueToObject <
-        cueDistance -
-        BALL_RADIUS
-    ) {
-
-        actuallyBlocked = true;
-
-    }
-
-
-    if (
-        actuallyBlocked
-    ) {
-
-        blockedLine.setAttribute(
-            "x1",
-            cueX
-        );
-
-        blockedLine.setAttribute(
-            "y1",
-            cueY
-        );
-
-        blockedLine.setAttribute(
-            "x2",
-            objectX
-        );
-
-        blockedLine.setAttribute(
-            "y2",
-            objectY
-        );
-
-        blockedLine.setAttribute(
-            "visibility",
-            "visible"
-        );
-
-    }
-
-    else {
-
-        blockedLine.setAttribute(
-            "visibility",
-            "hidden"
-        );
-
-    }
-
-
-    /*
-        DIFFICULTY MODEL
-
-        This is deliberately an estimate.
-
-        Straight:
-            < 5 degrees
-
-        Easy:
-            < 15
-
-        Moderate:
-            < 30
-
-        Hard:
-            < 45
-
-        Very hard:
-            45+
-    */
-
-    let difficulty;
-
-    if (
-        cutAngle < 5
-    ) {
-
-        difficulty =
-            "Straight";
-
-    }
-
-    else if (
-        cutAngle < 15
-    ) {
-
-        difficulty =
-            "Easy";
-
-    }
-
-    else if (
-        cutAngle < 30
-    ) {
-
-        difficulty =
-            "Moderate";
-
-    }
-
-    else if (
-        cutAngle < 45
-    ) {
-
-        difficulty =
-            "Hard";
-
-    }
-
-    else {
-
-        difficulty =
-            "Very Hard";
-
-    }
-
-
-    /*
-        POCKET DISTANCE
-        CONVERSION
-
-        740 SVG units = 78 inches
-    */
-
-    const inchesPerSVG =
-        78 / 740;
-
-
-    const cueInches =
-        cueDistance *
-        inchesPerSVG;
-
-
-    const objectInches =
-        objectDistance *
-        inchesPerSVG;
-
-
-    /*
-        UPDATE UI
-    */
-
-    cutAngleDisplay.textContent =
-        cutAngle.toFixed(1) + "°";
-
-
-    shotDistanceDisplay.textContent =
-        (
-            cueInches +
-            objectInches
-        ).toFixed(1) +
-        " in";
-
-
-    difficultyDisplay.textContent =
-        difficulty;
-
-
-    if (
-        actuallyBlocked
-    ) {
-
-        shotTitle.textContent =
-            "Potential obstruction";
-
-        shotDescription.textContent =
-            "The intended cue-ball path appears to pass too close to the object ball before reaching the ghost-ball position. Reposition the cue ball or consider another shot.";
-
-    }
-
-    else {
-
-        shotTitle.textContent =
-            difficulty +
-            " cut";
-
-
-        shotDescription.textContent =
-            "Aim the cue ball toward the cyan ghost-ball position. The yellow line shows the intended object-ball path into the selected pocket.";
-
-    }
-
+    return {
+      type: "kick",
+      cuePath: [
+        state.cue,
+        kick.kickPoint,
+        state.object
+      ],
+      objectPath: [
+        state.object,
+        pocket
+      ],
+      kick,
+      contact: state.object,
+      valid: true
+    };
+  }
+
+  if (state.shotType === "combo") {
+    const combo =
+      getComboSolution();
+
+    const firstContact =
+      getContactPoint(
+        combo.first,
+        combo.target
+      );
+
+    return {
+      type: "combo",
+      cuePath: [
+        state.cue,
+        firstContact
+      ],
+      objectPath: [
+        combo.first,
+        state.object,
+        pocket
+      ],
+      contact: firstContact,
+      combo,
+      valid: true
+    };
+  }
 }
 
+/* ---------------------------------------------------------
+   Instruction generation
+   --------------------------------------------------------- */
 
-/* =========================================================
-   CLEAR GRAPHICS
-   ========================================================= */
+function buildInstructions(solution) {
+  if (!solution.valid) {
+    instructionMain.textContent =
+      "No clean route found.";
 
-function clearGraphics() {
+    instructionDetail.textContent =
+      "Move the balls or choose another pocket.";
 
-    cueAim.setAttribute(
-        "visibility",
-        "hidden"
+    stepsEl.innerHTML = "";
+
+    return;
+  }
+
+  const steps = [];
+
+  if (solution.type === "direct") {
+    const target =
+      getPocket();
+
+    instructionMain.textContent =
+      `Shoot the ${target.name}.`;
+
+    instructionDetail.textContent =
+      describeObjectContact(
+        state.object,
+        target
+      );
+
+    steps.push(
+      "Line the cue ball up with the contact point shown on the table."
     );
 
-    objectPath.setAttribute(
-        "visibility",
-        "hidden"
+    steps.push(
+      describeObjectContact(
+        state.object,
+        target
+      )
     );
 
-    blockedLine.setAttribute(
-        "visibility",
-        "hidden"
+    steps.push(
+      "Send the object ball along the green path toward the pocket."
+    );
+  }
+
+  if (solution.type === "bank") {
+    const bank =
+      solution.bank;
+
+    instructionMain.textContent =
+      `Bank off the ${railName(bank.rail)}.`;
+
+    instructionDetail.textContent =
+      `Use the rail point shown in blue, then let the object ball run to the ${getPocket().name}.`;
+
+    steps.push(
+      describeObjectContact(
+        state.object,
+        bank.bankPoint
+      )
     );
 
-    ghost.setAttribute(
-        "visibility",
-        "hidden"
+    steps.push(
+      `Send the object ball toward the ${railName(bank.rail)} at about ${nearestDiamond(bank.bankPoint, bank.rail)}.`
     );
 
-    contact.setAttribute(
-        "visibility",
-        "hidden"
+    steps.push(
+      `The rebound should send the object ball toward the ${getPocket().name}.`
     );
 
+    steps.push(
+      describeRelativeAim(
+        state.cue,
+        solution.contact
+      )
+    );
+  }
+
+  if (solution.type === "kick") {
+    instructionMain.textContent =
+      `Kick off the ${railName(solution.kick.rail)}.`;
+
+    instructionDetail.textContent =
+      "The cue ball uses the rail first, then contacts the object ball.";
+
+    steps.push(
+      `Aim the cue ball toward the ${railName(solution.kick.rail)} at the blue rail point.`
+    );
+
+    steps.push(
+      `Use the rail point shown on the table — approximately ${nearestDiamond(solution.kick.kickPoint, solution.kick.rail)}.`
+    );
+
+    steps.push(
+      "Let the rebound carry the cue ball into the object ball."
+    );
+
+    steps.push(
+      `The object ball then travels toward the ${getPocket().name}.`
+    );
+  }
+
+  if (solution.type === "combo") {
+    instructionMain.textContent =
+      `Play the combination to the ${getPocket().name}.`;
+
+    instructionDetail.textContent =
+      "The first ball transfers the shot into the object ball, which continues toward the pocket.";
+
+    steps.push(
+      "Aim the cue ball at the first object ball using the contact point shown."
+    );
+
+    steps.push(
+      "The first ball should contact the second ball along the green path."
+    );
+
+    steps.push(
+      `The second ball continues toward the ${getPocket().name}.`
+    );
+  }
+
+  stepsEl.innerHTML = steps
+    .map(
+      (text, index) => `
+        <div class="step">
+          <div class="step-number">${index + 1}</div>
+          <div class="step-text">${text}</div>
+        </div>
+      `
+    )
+    .join("");
 }
 
+/* ---------------------------------------------------------
+   Path drawing
+   --------------------------------------------------------- */
 
-/* =========================================================
-   CLEAR POCKET SELECTION
-   ========================================================= */
+function drawDashedLine(points, color, width = 4) {
+  if (!points || points.length < 2) return;
 
-function clearPocketSelection() {
+  ctx.save();
 
-    pockets.forEach(
-        function(pocket) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.setLineDash([10, 8]);
 
-            const element =
-                document.getElementById(
-                    pocket.id
-                );
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
 
-            element.classList.remove(
-                "selected"
-            );
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i].x, points[i].y);
+  }
 
-        }
-    );
+  ctx.stroke();
 
+  ctx.restore();
 }
 
+function drawSolidLine(points, color, width = 3) {
+  if (!points || points.length < 2) return;
 
-/* =========================================================
-   INITIAL STATE
-   ========================================================= */
+  ctx.save();
 
-setMode("cue");
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i].x, points[i].y);
+  }
+
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawPoint(point, color, radius = 7) {
+  ctx.save();
+
+  ctx.beginPath();
+  ctx.arc(
+    point.x,
+    point.y,
+    radius,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fillStyle = color;
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(255,255,255,.85)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawLabel(point, text, color) {
+  ctx.save();
+
+  ctx.font =
+    "700 11px system-ui, -apple-system, sans-serif";
+
+  const paddingX = 8;
+  const paddingY = 5;
+  const metrics = ctx.measureText(text);
+
+  const width = metrics.width + paddingX * 2;
+  const height = 23;
+
+  let x = point.x - width / 2;
+  let y = point.y - 31;
+
+  x = clamp(
+    x,
+    felt.left,
+    felt.right - width
+  );
+
+  y = clamp(
+    y,
+    felt.top + 2,
+    felt.bottom - height
+  );
+
+  ctx.fillStyle = "rgba(7,10,12,.88)";
+
+  roundedRectPath(
+    x,
+    y,
+    width,
+    height,
+    7
+  );
+
+  ctx.fill();
+
+  ctx.fillStyle = color;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  ctx.fillText(
+    text,
+    x + width / 2,
+    y + height / 2 + .5
+  );
+
+  ctx.restore();
+}
+
+/* ---------------------------------------------------------
+   Main draw
+   --------------------------------------------------------- */
+
+function drawShotOverlay() {
+  const solution = calculateShot();
+
+  if (!solution.valid) return;
+
+  /* Object path */
+  if (solution.objectPath) {
+    drawDashedLine(
+      solution.objectPath,
+      "#2bd576",
+      5
+    );
+  }
+
+  /* Cue path */
+  if (solution.cuePath) {
+    drawSolidLine(
+      solution.cuePath,
+      "#f4f4ef",
+      3
+    );
+  }
+
+  /* Bank / kick points */
+  if (solution.bank) {
+    drawPoint(
+      solution.bank.bankPoint,
+      "#5da9ff",
+      9
+    );
+
+    drawLabel(
+      solution.bank.bankPoint,
+      "BANK HERE",
+      "#5da9ff"
+    );
+  }
+
+  if (solution.kick) {
+    drawPoint(
+      solution.kick.kickPoint,
+      "#5da9ff",
+      9
+    );
+
+    drawLabel(
+      solution.kick.kickPoint,
+      "KICK HERE",
+      "#5da9ff"
+    );
+  }
+
+  if (solution.contact) {
+    drawPoint(
+      solution.contact,
+      "#f2c14e",
+      6
+    );
+
+    drawLabel(
+      solution.contact,
+      "CONTACT",
+      "#f2c14e"
+    );
+  }
+
+  /* Pocket target */
+  const pocket = getPocket();
+
+  drawLabel(
+    {
+      x: pocket.x,
+      y: pocket.y + 42
+    },
+    "TARGET",
+    "#2bd576"
+  );
+}
+
+function draw() {
+  drawTable();
+  drawShotOverlay();
+
+  drawBall(
+    state.cue,
+    "cue"
+  );
+
+  drawBall(
+    state.object,
+    "object"
+  );
+}
+
+/* ---------------------------------------------------------
+   Ball dragging / iPad touch
+   --------------------------------------------------------- */
+
+function getBallAt(worldPoint) {
+  const cueDistance =
+    distance(worldPoint, state.cue);
+
+  const objectDistance =
+    distance(worldPoint, state.object);
+
+  const hitRadius =
+    TABLE.ballRadius * 2.1;
+
+  if (
+    cueDistance <= hitRadius &&
+    cueDistance <= objectDistance
+  ) {
+    return "cue";
+  }
+
+  if (
+    objectDistance <= hitRadius
+  ) {
+    return "object";
+  }
+
+  return null;
+}
+
+function moveSelectedBall(worldPoint) {
+  if (!state.selectedBall) return;
+
+  const ball = state[state.selectedBall];
+
+  const minX =
+    felt.left + TABLE.ballRadius;
+
+  const maxX =
+    felt.right - TABLE.ballRadius;
+
+  const minY =
+    felt.top + TABLE.ballRadius;
+
+  const maxY =
+    felt.bottom - TABLE.ballRadius;
+
+  ball.x = clamp(
+    worldPoint.x,
+    minX,
+    maxX
+  );
+
+  ball.y = clamp(
+    worldPoint.y,
+    minY,
+    maxY
+  );
+
+  /* Prevent the balls from occupying the same space. */
+  const other =
+    state.selectedBall === "cue"
+      ? state.object
+      : state.cue;
+
+  const minimumDistance =
+    TABLE.ballRadius * 2.05;
+
+  const d = distance(
+    ball,
+    other
+  );
+
+  if (d < minimumDistance) {
+    const direction =
+      normalize(
+        sub(ball, other)
+      );
+
+    ball.x =
+      other.x +
+      direction.x *
+      minimumDistance;
+
+    ball.y =
+      other.y +
+      direction.y *
+      minimumDistance;
+
+    ball.x = clamp(
+      ball.x,
+      minX,
+      maxX
+    );
+
+    ball.y = clamp(
+      ball.y,
+      minY,
+      maxY
+    );
+  }
+
+  update();
+}
+
+function pointerPosition(event) {
+  return canvasToWorld(
+    event.clientX,
+    event.clientY
+  );
+}
+
+canvas.addEventListener(
+  "pointerdown",
+  event => {
+    event.preventDefault();
+
+    const point =
+      pointerPosition(event);
+
+    const selected =
+      getBallAt(point);
+
+    state.selectedBall = selected;
+
+    if (selected) {
+      canvas.setPointerCapture(
+        event.pointerId
+      );
+    }
+
+    update();
+  },
+  { passive: false }
+);
+
+canvas.addEventListener(
+  "pointermove",
+  event => {
+    if (!state.selectedBall) return;
+
+    event.preventDefault();
+
+    moveSelectedBall(
+      pointerPosition(event)
+    );
+  },
+  { passive: false }
+);
+
+canvas.addEventListener(
+  "pointerup",
+  event => {
+    state.selectedBall = null;
+
+    if (
+      canvas.hasPointerCapture(
+        event.pointerId
+      )
+    ) {
+      canvas.releasePointerCapture(
+        event.pointerId
+      );
+    }
+
+    update();
+  },
+  { passive: false }
+);
+
+canvas.addEventListener(
+  "pointercancel",
+  event => {
+    state.selectedBall = null;
+
+    if (
+      canvas.hasPointerCapture(
+        event.pointerId
+      )
+    ) {
+      canvas.releasePointerCapture(
+        event.pointerId
+      );
+    }
+
+    update();
+  }
+);
+
+/* ---------------------------------------------------------
+   Controls
+   --------------------------------------------------------- */
+
+shotButtons.forEach(button => {
+  button.addEventListener(
+    "click",
+    () => {
+      state.shotType =
+        button.dataset.shot;
+
+      shotButtons.forEach(
+        b => b.classList.remove("active")
+      );
+
+      button.classList.add("active");
+
+      update();
+    }
+  );
+});
+
+pocketSelect.addEventListener(
+  "change",
+  update
+);
+
+resetButton.addEventListener(
+  "click",
+  () => {
+    state.cue = {
+      x: 250,
+      y: 330
+    };
+
+    state.object = {
+      x: 580,
+      y: 250
+    };
+
+    state.shotType = "direct";
+
+    pocketSelect.value = "br";
+
+    shotButtons.forEach(
+      b => {
+        b.classList.toggle(
+          "active",
+          b.dataset.shot === "direct"
+        );
+      }
+    );
+
+    update();
+  }
+);
+
+centerButton.addEventListener(
+  "click",
+  () => {
+    state.cue = {
+      x: 280,
+      y: 300
+    };
+
+    state.object = {
+      x: 570,
+      y: 250
+    };
+
+    update();
+  }
+);
+
+/* ---------------------------------------------------------
+   Update
+   --------------------------------------------------------- */
+
+function update() {
+  const solution =
+    calculateShot();
+
+  buildInstructions(solution);
+
+  draw();
+}
+
+/* ---------------------------------------------------------
+   Resize handling
+   --------------------------------------------------------- */
+
+window.addEventListener(
+  "resize",
+  resizeCanvas
+);
+
+if (
+  typeof ResizeObserver !== "undefined"
+) {
+  const observer =
+    new ResizeObserver(
+      resizeCanvas
+    );
+
+  observer.observe(
+    document.querySelector(".table-wrap")
+  );
+}
+
+/* ---------------------------------------------------------
+   Initial render
+   --------------------------------------------------------- */
+
+resizeCanvas();
+update();
 
 </script>
-
 </body>
 </html>
