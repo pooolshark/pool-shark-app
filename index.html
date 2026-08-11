@@ -1,89 +1,246 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pool Shark</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pool Shark</title>
 
-  <style>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
     body {
-      margin: 0;
-      background: #111;
-      font-family: Arial, sans-serif;
-      color: white;
-      text-align: center;
+        margin: 0;
+        background: #111;
+        color: white;
+        font-family: Arial, sans-serif;
     }
 
     h1 {
-      margin: 20px 0;
-      font-size: 28px;
+        text-align: center;
+        margin: 18px 0;
+        font-size: 26px;
     }
 
-    .table {
-      position: relative;
-      width: 92vw;
-      max-width: 900px;
-      aspect-ratio: 2 / 1;
-      margin: 20px auto;
-      background: #087f3f;
-      border: 18px solid #5a321c;
-      border-radius: 10px;
-      box-sizing: border-box;
+    .table-wrap {
+        width: 96vw;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .rail {
+        fill: #5a321c;
+    }
+
+    .cloth {
+        fill: #08783f;
+    }
+
+    .cushion {
+        fill: #145b36;
     }
 
     .pocket {
-      position: absolute;
-      width: 6%;
-      aspect-ratio: 1;
-      background: #111;
-      border-radius: 50%;
+        fill: #050505;
     }
 
-    .top-left {
-      top: -5%;
-      left: -3%;
+    .diamond {
+        fill: #d8c69b;
     }
 
-    .top-right {
-      top: -5%;
-      right: -3%;
+    .spot {
+        fill: rgba(255,255,255,.65);
     }
 
-    .bottom-left {
-      bottom: -5%;
-      left: -3%;
+    .label {
+        text-align: center;
+        color: #999;
+        font-size: 13px;
+        margin: 10px 0 20px;
     }
-
-    .bottom-right {
-      bottom: -5%;
-      right: -3%;
-    }
-
-    .middle-left {
-      top: 47%;
-      left: -4%;
-    }
-
-    .middle-right {
-      top: 47%;
-      right: -4%;
-    }
-  </style>
+</style>
 </head>
 
 <body>
 
-  <h1>Pool Shark</h1>
+<h1>Pool Shark</h1>
 
-  <div class="table">
+<div class="table-wrap">
 
-    <div class="pocket top-left"></div>
-    <div class="pocket top-right"></div>
-    <div class="pocket middle-left"></div>
-    <div class="pocket middle-right"></div>
-    <div class="pocket bottom-left"></div>
-    <div class="pocket bottom-right"></div>
+<svg
+    viewBox="0 0 860 470"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-label="7 foot pool table">
 
-  </div>
+    <!--
+        PLAYING SURFACE
+        Real-world model:
+        78 inches long × 39 inches wide
+        = exact 2:1 ratio
+    -->
+
+    <!-- Outer rail -->
+    <rect
+        x="20"
+        y="20"
+        width="820"
+        height="430"
+        rx="14"
+        class="rail"/>
+
+    <!-- Playing surface -->
+    <rect
+        x="70"
+        y="45"
+        width="740"
+        height="370"
+        class="cloth"/>
+
+    <!-- Cushion noses -->
+    <line x1="70" y1="45" x2="810" y2="45"
+          stroke="#174f31" stroke-width="8"/>
+
+    <line x1="70" y1="415" x2="810" y2="415"
+          stroke="#174f31" stroke-width="8"/>
+
+    <line x1="70" y1="45" x2="70" y2="415"
+          stroke="#174f31" stroke-width="8"/>
+
+    <line x1="810" y1="45" x2="810" y2="415"
+          stroke="#174f31" stroke-width="8"/>
+
+
+    <!-- =========================
+         SIX POCKETS
+         ========================= -->
+
+    <!-- Top-left -->
+    <circle cx="70" cy="45" r="25" class="pocket"/>
+
+    <!-- Top-middle -->
+    <circle cx="440" cy="45" r="25" class="pocket"/>
+
+    <!-- Top-right -->
+    <circle cx="810" cy="45" r="25" class="pocket"/>
+
+    <!-- Bottom-left -->
+    <circle cx="70" cy="415" r="25" class="pocket"/>
+
+    <!-- Bottom-middle -->
+    <circle cx="440" cy="415" r="25" class="pocket"/>
+
+    <!-- Bottom-right -->
+    <circle cx="810" cy="415" r="25" class="pocket"/>
+
+
+    <!-- =========================
+         TABLE CENTER / STRINGS
+         ========================= -->
+
+    <!-- Center string -->
+    <line
+        x1="440" y1="45"
+        x2="440" y2="415"
+        stroke="rgba(255,255,255,.10)"
+        stroke-width="1"/>
+
+    <!-- Head string -->
+    <line
+        x1="255" y1="45"
+        x2="255" y2="415"
+        stroke="rgba(255,255,255,.10)"
+        stroke-width="1"/>
+
+    <!-- Foot string -->
+    <line
+        x1="625" y1="45"
+        x2="625" y2="415"
+        stroke="rgba(255,255,255,.10)"
+        stroke-width="1"/>
+
+
+    <!-- =========================
+         TABLE SPOTS
+         ========================= -->
+
+    <circle cx="255" cy="230" r="4" class="spot"/>
+    <circle cx="440" cy="230" r="4" class="spot"/>
+    <circle cx="625" cy="230" r="4" class="spot"/>
+
+
+    <!-- =========================
+         RAIL DIAMONDS
+         ========================= -->
+
+    <!-- TOP RAIL -->
+    <rect x="165" y="28" width="10" height="10"
+          transform="rotate(45 170 33)" class="diamond"/>
+
+    <rect x="255" y="28" width="10" height="10"
+          transform="rotate(45 260 33)" class="diamond"/>
+
+    <rect x="350" y="28" width="10" height="10"
+          transform="rotate(45 355 33)" class="diamond"/>
+
+    <rect x="525" y="28" width="10" height="10"
+          transform="rotate(45 530 33)" class="diamond"/>
+
+    <rect x="625" y="28" width="10" height="10"
+          transform="rotate(45 630 33)" class="diamond"/>
+
+    <rect x="715" y="28" width="10" height="10"
+          transform="rotate(45 720 33)" class="diamond"/>
+
+
+    <!-- BOTTOM RAIL -->
+    <rect x="165" y="422" width="10" height="10"
+          transform="rotate(45 170 427)" class="diamond"/>
+
+    <rect x="255" y="422" width="10" height="10"
+          transform="rotate(45 260 427)" class="diamond"/>
+
+    <rect x="350" y="422" width="10" height="10"
+          transform="rotate(45 355 427)" class="diamond"/>
+
+    <rect x="525" y="422" width="10" height="10"
+          transform="rotate(45 530 427)" class="diamond"/>
+
+    <rect x="625" y="422" width="10" height="10"
+          transform="rotate(45 630 427)" class="diamond"/>
+
+    <rect x="715" y="422" width="10" height="10"
+          transform="rotate(45 720 427)" class="diamond"/>
+
+
+    <!-- LEFT RAIL -->
+    <rect x="28" y="135" width="10" height="10"
+          transform="rotate(45 33 140)" class="diamond"/>
+
+    <rect x="28" y="320" width="10" height="10"
+          transform="rotate(45 33 325)" class="diamond"/>
+
+
+    <!-- RIGHT RAIL -->
+    <rect x="822" y="135" width="10" height="10"
+          transform="rotate(45 827 140)" class="diamond"/>
+
+    <rect x="822" y="320" width="10" height="10"
+          transform="rotate(45 827 325)" class="diamond"/>
+
+</svg>
+
+</div>
+
+<div class="label">
+    7' Bar Box · 39" × 78" playing surface
+</div>
 
 </body>
 </html>
