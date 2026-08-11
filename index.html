@@ -235,13 +235,31 @@
           transform="rotate(45 827 325)" class="diamond"/>
 
 <!-- BALLS -->
+
+<!-- Invisible touch targets -->
+<circle id="cueTouch"
+        cx="300"
+        cy="230"
+        r="25"
+        fill="transparent"
+        style="touch-action:none;"/>
+
+<circle id="objectTouch"
+        cx="500"
+        cy="230"
+        r="25"
+        fill="transparent"
+        style="touch-action:none;"/>
+
+<!-- Visible balls -->
 <circle id="cueBall"
         cx="300"
         cy="230"
         r="11"
         fill="white"
         stroke="#ccc"
-        stroke-width="1"/>
+        stroke-width="1"
+        pointer-events="none"/>
 
 <circle id="objectBall"
         cx="500"
@@ -249,9 +267,65 @@
         r="11"
         fill="#e63946"
         stroke="#fff"
-        stroke-width="1"/>
+        stroke-width="1"
+        pointer-events="none"/>
 
 <script>
+const svg = document.querySelector("svg");
+
+const cueTouch = document.getElementById("cueTouch");
+const objectTouch = document.getElementById("objectTouch");
+
+const cueBall = document.getElementById("cueBall");
+const objectBall = document.getElementById("objectBall");
+
+let activeBall = null;
+
+function startDrag(event) {
+    activeBall = event.currentTarget;
+    event.preventDefault();
+    activeBall.setPointerCapture(event.pointerId);
+}
+
+function moveBall(event) {
+    if (!activeBall) return;
+
+    const point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+
+    const p = point.matrixTransform(
+        svg.getScreenCTM().inverse()
+    );
+
+    const x = Math.max(82, Math.min(798, p.x));
+    const y = Math.max(57, Math.min(403, p.y));
+
+    activeBall.setAttribute("cx", x);
+    activeBall.setAttribute("cy", y);
+
+    if (activeBall === cueTouch) {
+        cueBall.setAttribute("cx", x);
+        cueBall.setAttribute("cy", y);
+    } else {
+        objectBall.setAttribute("cx", x);
+        objectBall.setAttribute("cy", y);
+    }
+}
+
+function stopDrag(event) {
+    if (activeBall) {
+        activeBall.releasePointerCapture?.(event.pointerId);
+    }
+    activeBall = null;
+}
+
+cueTouch.addEventListener("pointerdown", startDrag);
+objectTouch.addEventListener("pointerdown", startDrag);
+
+window.addEventListener("pointermove", moveBall);
+window.addEventListener("pointerup", stopDrag);
+</script>
 const svg = document.querySelector("svg");
 
 const cueBall = document.getElementById("cueBall");
