@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pool Shark</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 20px 0;
+      font-size: 28px;
+    }
+
+    .table {
+      position: relative;
+      width: 92vw;
+      max-width: 900px;
+      aspect-ratio: 2 / 1;
+      margin: 20px auto;
+      background: #087f3f;
+      border: 18px solid #5a321c;
+      border-radius: 10px;
+      box-sizing: border-box;
+    }
+
+    .pocket {
+      position: absolute;
+      width: 6%;
+      aspect-ratio: 1;
+      background: #111;
+      border-radius: 50%;
+    }
+
+    .top-left {
+      top: -5%;
+      left: -3%;
+    }
+
+    .top-right {
+      top: -5%;
+      right: -3%;
+    }
+
+    .bottom-left {
+      bottom: -5%;
+      left: -3%;
+    }
+
+    .bottom-right {
+      bottom: -5%;
+      right: -3%;
+    }
+
+    .middle-left {
+      top: 47%;
+      left: -4%;
+    }
+
+    .middle-right {
+      top: 47%;
+      right: -4%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Pool Shark</h1>
+
+  <div class="table">
+
+    <div class="pocket top-left"></div>
+    <div class="pocket top-right"></div>
+    <div class="pocket middle-left"></div>
+    <div class="pocket middle-right"></div>
+    <div class="pocket bottom-left"></div>
+    <div class="pocket bottom-right"></div>
+
+  </div>
+
+</body>
+</html>
